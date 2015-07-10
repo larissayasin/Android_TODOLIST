@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.app.larissag.epiclist"
+        applicationId "com.larissag.epiclist"
         minSdkVersion 21
         targetSdkVersion 21
         versionCode 1
@@ -17,9 +17,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    repositories {
+        maven {
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        }
+    }
+
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:22.2.0'
+    //compile 'com.github.navasmdc:MaterialDesign:1.5@aar'
+//http://android-developers.blogspot.com.br/2015/05/android-design-support-library.html
+    compile 'com.android.support:design:22.2.0'
+
+    compile 'com.jakewharton:butterknife:7.0.1'
+//https://github.com/daimajia/AndroidSwipeLayout
+    compile 'com.android.support:recyclerview-v7:21.0.0'
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+//https://github.com/realm/realm-java
+    compile 'io.realm:realm-android:0.82.0-SNAPSHOT'
 }
