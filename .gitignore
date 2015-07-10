@@ -5,3 +5,8 @@
 .DS_Store
 /build
 /captures
+/.idea/.name
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/vcs.xml
+/app/app.iml
