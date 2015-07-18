@@ -41,6 +41,7 @@ dependencies {
 //https://github.com/daimajia/AndroidSwipeLayout
     compile 'com.android.support:recyclerview-v7:21.0.0'
     compile "com.daimajia.swipelayout:library:1.2.0@aar"
+    compile 'com.daimajia.androidanimations:library:1.1.2@aar'
 //https://github.com/realm/realm-java
     compile 'io.realm:realm-android:0.82.0-SNAPSHOT'
 }
