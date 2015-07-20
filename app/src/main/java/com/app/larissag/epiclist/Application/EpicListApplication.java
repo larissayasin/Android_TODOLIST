@@ -5,6 +5,9 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 public class EpicListApplication extends Application {
 
     private static int USER_LEVEL_INITIAL = 1;
@@ -16,9 +19,9 @@ public class EpicListApplication extends Application {
     public void onCreate()
     {
         super.onCreate();
-
-        // Initialize the singletons so their instances
-        // are bound to the application process.
+        RealmConfiguration config = new RealmConfiguration.Builder(getApplicationContext()).build();
+        Realm.setDefaultConfiguration(config);
+        new EpicListData().populateDB();
         changeUserLevel(USER_LEVEL_INITIAL);
         changeUserProgress(USER_PROGRESS_INITIAL);
     }

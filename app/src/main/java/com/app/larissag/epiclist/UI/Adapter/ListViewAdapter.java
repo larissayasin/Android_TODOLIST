@@ -34,7 +34,8 @@ public class ListViewAdapter extends BaseSwipeAdapter {
         swipeLayout.addSwipeListener(new SimpleSwipeListener() {
             @Override
             public void onOpen(SwipeLayout layout) {
-                YoYo.with(Techniques.Tada).duration(500).delay(100).playOn(layout.findViewById(R.id.trash));
+                YoYo.with(Techniques.Tada).duration(500).delay(100).playOn(layout.findViewById(R.id.done));
+                Toast.makeText(mContext, "DoubleClick", Toast.LENGTH_SHORT).show();
             }
         });
         swipeLayout.setOnDoubleClickListener(new SwipeLayout.DoubleClickListener() {
@@ -43,12 +44,8 @@ public class ListViewAdapter extends BaseSwipeAdapter {
                 Toast.makeText(mContext, "DoubleClick", Toast.LENGTH_SHORT).show();
             }
         });
-        v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(mContext, "click delete", Toast.LENGTH_SHORT).show();
-            }
-        });
+
+
         return v;
     }
 

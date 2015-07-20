@@ -14,4 +14,11 @@
     <string name="title_activity_list">ListActivity</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="action_add">+</string>
+    <string name="title_activity_task">TaskActivity</string>
+    <string name="titulo">Titulo</string>
+    <string name="descricao">Descricao</string>
+    <string name="categoria">Categoria</string>
+    <string name="action_delete">Apagar</string>
+    <string name="add_image">Adicionar Imagem:</string>
 </resources>

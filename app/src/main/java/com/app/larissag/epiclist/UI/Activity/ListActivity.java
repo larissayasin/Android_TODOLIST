@@ -15,16 +15,26 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.app.larissag.epiclist.Model.Categoria;
 import com.app.larissag.epiclist.R;
 import com.app.larissag.epiclist.UI.Adapter.ListViewAdapter;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
 
+import butterknife.Bind;
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 public class ListActivity extends Activity {
 
-    private ListView mListView;
+    @Bind(R.id.categoria_spinner)
+    Spinner categoriaSp;
+    @Bind(R.id.listview)
+    ListView mListView;
+
     private ListViewAdapter mAdapter;
     private Context mContext = this;
 
@@ -32,22 +42,15 @@ public class ListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        mListView = (ListView) findViewById(R.id.listview);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ActionBar actionBar = getActionBar();
-            if (actionBar != null) {
-                actionBar.setTitle("ListView");
-            }
-        }
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Categoria> result = realm.where(Categoria.class).findAll();
 
-        /**
-         * The following comment is the sample usage of ArraySwipeAdapter.
-         */
-//        String[] adapterData = new String[]{"Activity", "Service", "Content Provider", "Intent", "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient",
-//                "DDMS", "Android Studio", "Fragment", "Loader", "Activity", "Service", "Content Provider", "Intent",
-//                "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient", "Activity", "Service", "Content Provider", "Intent",
-//                "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient"};
-//        mListView.setAdapter(new ArraySwipeAdapterSample<String>(this, R.layout.listview_item, R.id.position, adapterData));
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            ActionBar actionBar = getActionBar();
+//            if (actionBar != null) {
+//                actionBar.setTitle("ListView");
+//            }
+//        }
 
         mAdapter = new ListViewAdapter(this);
         mListView.setAdapter(mAdapter);
@@ -114,6 +117,11 @@ public class ListActivity extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_listview) {
             startActivity(new Intent(this, ListActivity.class));
+            finish();
+            return true;
+        }
+        if(id == R.id.action_add){
+            startActivityForResult(new Intent(this, TaskActivity.class), 0);
             finish();
             return true;
         }
