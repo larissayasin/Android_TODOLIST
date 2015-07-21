@@ -12,6 +12,7 @@ import com.app.larissag.epiclist.Application.EpicListApplication;
 import com.app.larissag.epiclist.Model.Nivel;
 import com.app.larissag.epiclist.Model.Task;
 import com.app.larissag.epiclist.R;
+import com.app.larissag.epiclist.UI.Activity.ListActivity;
 import com.app.larissag.epiclist.UI.Activity.TaskActivity;
 import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
@@ -71,9 +72,8 @@ public class ListViewAdapter extends BaseSwipeAdapter {
                     Toast.makeText(context, nivel.getTexto(), Toast.LENGTH_SHORT).show();
                 }
                 application.changeUserProgress(application.getUserProgress());
-
+                closeAllItems();
                 notifyDataSetChanged();
-
             }
         });
 

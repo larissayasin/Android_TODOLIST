@@ -117,15 +117,14 @@ public class ListActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
-        progresso.setProgress(application.getUserProgress());
-        super.onResume();
-    }
-
-    @Override
     protected void onRestart() {
         tasks = realm.where(Task.class).findAll();
         adapter.updateTaskList(tasks);
+        progresso.setProgress(application.getUserProgress());
         super.onRestart();
+    }
+
+    public void updateProgress(){
+        progresso.setProgress(application.getUserProgress());
     }
 }
