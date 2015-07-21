@@ -2,9 +2,6 @@ package com.app.larissag.epiclist.Model;
 
 import io.realm.RealmObject;
 
-/**
- * Created by larissag on 7/13/15.
- */
 public class Nivel extends RealmObject {
 
     private int nroNivel;

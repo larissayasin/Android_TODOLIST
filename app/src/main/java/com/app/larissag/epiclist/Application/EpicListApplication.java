@@ -21,9 +21,16 @@ public class EpicListApplication extends Application {
         super.onCreate();
         RealmConfiguration config = new RealmConfiguration.Builder(getApplicationContext()).build();
         Realm.setDefaultConfiguration(config);
-        new EpicListData().populateDB();
-        changeUserLevel(USER_LEVEL_INITIAL);
-        changeUserProgress(USER_PROGRESS_INITIAL);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!prefs.getBoolean("firstTime", false)) {
+            new EpicListData().populateDB();
+            changeUserLevel(USER_LEVEL_INITIAL);
+            changeUserProgress(USER_PROGRESS_INITIAL);
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstTime", true);
+            editor.commit();
+        }
     }
 
 
@@ -50,6 +57,9 @@ public class EpicListApplication extends Application {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         int progress = preferences.getInt(PROGRESS, 0);
         return  progress;
+    }
+    public long getNextKey(){
+        return  new EpicListData().getNextKey();
     }
 
 }

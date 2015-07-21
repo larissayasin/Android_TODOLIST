@@ -1,31 +1,32 @@
 package com.app.larissag.epiclist.UI.Activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.Toast;
 
+import com.app.larissag.epiclist.Application.EpicListApplication;
 import com.app.larissag.epiclist.Model.Categoria;
+import com.app.larissag.epiclist.Model.Nivel;
+import com.app.larissag.epiclist.Model.Task;
 import com.app.larissag.epiclist.R;
 import com.app.larissag.epiclist.UI.Adapter.ListViewAdapter;
-import com.daimajia.swipe.SwipeLayout;
-import com.daimajia.swipe.util.Attributes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 public class ListActivity extends Activity {
@@ -33,71 +34,62 @@ public class ListActivity extends Activity {
     @Bind(R.id.categoria_spinner)
     Spinner categoriaSp;
     @Bind(R.id.listview)
-    ListView mListView;
+    ListView listView;
+    @Bind(R.id.nivel_progress)
+    ProgressBar progresso;
 
-    private ListViewAdapter mAdapter;
+    private ListViewAdapter adapter;
     private Context mContext = this;
+    private RealmResults<Task> tasks;
+    private Realm realm;
+    private EpicListApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Categoria> result = realm.where(Categoria.class).findAll();
+        application = (EpicListApplication) getApplicationContext();
+        ButterKnife.bind(this);
+        realm = Realm.getDefaultInstance();
+        RealmResults<Categoria> categorias = realm.where(Categoria.class).findAll();
+        tasks = realm.where(Task.class).findAll();
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//            ActionBar actionBar = getActionBar();
-//            if (actionBar != null) {
-//                actionBar.setTitle("ListView");
-//            }
-//        }
+        adapter = new ListViewAdapter(this, tasks);
+        listView.setAdapter(adapter);
 
-        mAdapter = new ListViewAdapter(this);
-        mListView.setAdapter(mAdapter);
-        mAdapter.setMode(Attributes.Mode.Single);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((SwipeLayout)(mListView.getChildAt(position - mListView.getFirstVisiblePosition()))).open(true);
-            }
-        });
-        mListView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.e("ListView", "OnTouch");
-                return false;
-            }
-        });
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(mContext, "OnItemLongClickListener", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                Log.e("ListView", "onScrollStateChanged");
-            }
+        List<String> spinnerArray =  new ArrayList<String>();
+        spinnerArray.add("Todos");
+        for(Categoria c: categorias){
+            spinnerArray.add(c.getDescricao());
+        }
 
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, spinnerArray);
 
-            }
-        });
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        mListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        categoriaSp.setAdapter(arrayAdapter);
+
+        categoriaSp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("ListView", "onItemSelected:" + position);
+                if (position != 0) {
+                    RealmResults<Task> tasksFiltradas = realm.where(Task.class)
+                            .equalTo("categoria.descricao", parent.getItemAtPosition(position).toString()).findAll();
+                    adapter.updateTaskList(tasksFiltradas);
+                } else {
+                    adapter.updateTaskList(tasks);
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Log.e("ListView", "onNothingSelected:");
+
             }
         });
+
+        Nivel nivel = realm.where(Nivel.class).equalTo("nroNivel", application.getUserLevel() +1).findFirst();
+        progresso.setMax(nivel.getNroAtividades());
 
     }
 
@@ -111,9 +103,6 @@ public class ListActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_listview) {
             startActivity(new Intent(this, ListActivity.class));
@@ -122,9 +111,21 @@ public class ListActivity extends Activity {
         }
         if(id == R.id.action_add){
             startActivityForResult(new Intent(this, TaskActivity.class), 0);
-            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        progresso.setProgress(application.getUserProgress());
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestart() {
+        tasks = realm.where(Task.class).findAll();
+        adapter.updateTaskList(tasks);
+        super.onRestart();
     }
 }

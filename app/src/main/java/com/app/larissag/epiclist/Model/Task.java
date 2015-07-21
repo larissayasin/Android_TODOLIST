@@ -1,19 +1,27 @@
 package com.app.larissag.epiclist.Model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-/**
- * Created by larissag on 7/13/15.
- */
 public class Task extends RealmObject {
-
+    @PrimaryKey
+    private long chave;
     private String titulo;
     private String descricao;
     private String imagem;
     private Categoria categoria;
     private Date data;
+
+    public long getChave() {
+        return chave;
+    }
+
+    public void setChave(long chave) {
+        this.chave = chave;
+    }
 
     public String getTitulo() {
         return titulo;
