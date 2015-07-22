@@ -9,9 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.app.larissag.epiclist.Application.EpicListApplication;
 import com.app.larissag.epiclist.Model.Categoria;
@@ -37,6 +39,8 @@ public class ListActivity extends Activity {
     ListView listView;
     @Bind(R.id.nivel_progress)
     ProgressBar progresso;
+    @Bind(R.id.list_linearLayout)
+    LinearLayout layout;
 
     private ListViewAdapter adapter;
     private Context mContext = this;
@@ -69,6 +73,7 @@ public class ListActivity extends Activity {
                 } else {
                     adapter.updateTaskList(tasks);
                 }
+                updateProgress();
             }
 
             @Override
@@ -76,6 +81,8 @@ public class ListActivity extends Activity {
 
             }
         });
+
+
 
         Nivel nivel = realm.where(Nivel.class).equalTo("nroNivel", application.getUserLevel() + 1).findFirst();
         progresso.setMax(nivel.getNroAtividades());
@@ -118,7 +125,8 @@ public class ListActivity extends Activity {
         List<String> spinnerArray = new ArrayList<String>();
         spinnerArray.add("Todos");
         for (Categoria c : categorias) {
-            spinnerArray.add(c.getDescricao());
+            if (c.getDescricao() != null)
+                spinnerArray.add(c.getDescricao());
         }
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
