@@ -57,18 +57,7 @@ public class ListActivity extends Activity {
         adapter = new ListViewAdapter(this, tasks);
         listView.setAdapter(adapter);
 
-        List<String> spinnerArray =  new ArrayList<String>();
-        spinnerArray.add("Todos");
-        for(Categoria c: categorias){
-            spinnerArray.add(c.getDescricao());
-        }
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                this, android.R.layout.simple_spinner_item, spinnerArray);
-
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        categoriaSp.setAdapter(arrayAdapter);
+        updateCategoria(categorias);
 
         categoriaSp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -88,9 +77,9 @@ public class ListActivity extends Activity {
             }
         });
 
-        Nivel nivel = realm.where(Nivel.class).equalTo("nroNivel", application.getUserLevel() +1).findFirst();
+        Nivel nivel = realm.where(Nivel.class).equalTo("nroNivel", application.getUserLevel() + 1).findFirst();
         progresso.setMax(nivel.getNroAtividades());
-
+        updateProgress();
     }
 
 
@@ -109,7 +98,7 @@ public class ListActivity extends Activity {
             finish();
             return true;
         }
-        if(id == R.id.action_add){
+        if (id == R.id.action_add) {
             startActivityForResult(new Intent(this, TaskActivity.class), 0);
             return true;
         }
@@ -120,11 +109,27 @@ public class ListActivity extends Activity {
     protected void onRestart() {
         tasks = realm.where(Task.class).findAll();
         adapter.updateTaskList(tasks);
-        progresso.setProgress(application.getUserProgress());
+        updateProgress();
+        updateCategoria(realm.where(Categoria.class).findAll());
         super.onRestart();
     }
 
-    public void updateProgress(){
+    private void updateCategoria(List<Categoria> categorias) {
+        List<String> spinnerArray = new ArrayList<String>();
+        spinnerArray.add("Todos");
+        for (Categoria c : categorias) {
+            spinnerArray.add(c.getDescricao());
+        }
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, spinnerArray);
+
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        categoriaSp.setAdapter(arrayAdapter);
+    }
+
+    public void updateProgress() {
         progresso.setProgress(application.getUserProgress());
     }
 }
